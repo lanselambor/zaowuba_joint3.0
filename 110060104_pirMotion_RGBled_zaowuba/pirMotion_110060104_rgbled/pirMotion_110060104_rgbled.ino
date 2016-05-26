@@ -129,7 +129,7 @@ void loop() {
     {
       if(digitalRead(pir))
       {
-        begin = millis();
+        //begin = millis();
       }
       
       WTD.doggieTickle();  
