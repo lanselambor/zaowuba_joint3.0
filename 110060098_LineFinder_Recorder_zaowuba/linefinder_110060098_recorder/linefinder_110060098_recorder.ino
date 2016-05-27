@@ -1,17 +1,17 @@
 /*
 * Coin counter.ino
 * A demo for ChaiHuo ZaoWuBa Demo T14015
-* 
+*
 * Copyright (c) 2015 Seeed Technology Inc.
 * Auther     : Lmabor.Fang
 * Create Time: May 2015
 * Change Log : Lambor modified and update at May 2015
-* 
+*
 * This library is free software; you can redistribute it and/or
 * modify it under the terms of the GNU Lesser General Public
 * License as published by the Free Software Foundation; either
 * version 2.1 of the License, or (at your option) any later version.
-* 
+*
 * This library is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
@@ -33,41 +33,41 @@ class WatchDog
     //initial watchdog timeout
     WatchDog(long timeout = 2000){
       _timeout = timeout;
-    } 
-    
+    }
+
     //method
     void watchdogSetup(void){
-      cli();  
-      wdt_reset(); 
-      MCUSR &= ~(1<<WDRF);  
+      cli();
+      wdt_reset();
+      MCUSR &= ~(1<<WDRF);
       WDTCSR = (1<<WDCE) | (1<<WDE);
       WDTCSR = (1<<WDIE) | (0<<WDP3) | (1<<WDP2) | (1<<WDP1) | (0<<WDP0);
       sei();
     }
-    
+
     void doggieTickle(void){
       ResetTime = millis();
     }
-    
+
     //reset
-    void(* resetFunc) (void) = 0;     
-    
+    void(* resetFunc) (void) = 0;
+
     //parameters
     unsigned long ResetTime;
     volatile bool  Flg_Power;
     long _timeout;
-    
+
 };
 
 WatchDog WTD;
 
-ISR(WDT_vect) 
-{   
+ISR(WDT_vect)
+{
   if(millis() - WTD.ResetTime > WTD._timeout)
-  {    
-    WTD.doggieTickle();                                          
-    WTD.resetFunc();     
-  }  
+  {
+    WTD.doggieTickle();
+    WTD.resetFunc();
+  }
 }
 /******************* End of WatchDog ********************/
 
@@ -82,7 +82,7 @@ ISR(WDT_vect)
 class TimerOne
 {
   public:
-  
+
     // properties
     unsigned int pwmPeriod;
     unsigned char clockSelectBits;
@@ -91,21 +91,21 @@ class TimerOne
     // methods
     void initialize(long microseconds=1000000)
     {
-      TCCR1A = 0;                 // clear control register A 
+      TCCR1A = 0;                 // clear control register A
       TCCR1B = _BV(WGM13);        // set mode 8: phase and frequency correct pwm, stop the timer
       setPeriod(microseconds);
     }
-    
+
     void start()
     {
       unsigned int tcnt1;
-  
-      TIMSK1 &= ~_BV(TOIE1);        // AR added 
+
+      TIMSK1 &= ~_BV(TOIE1);        // AR added
       GTCCR |= _BV(PSRSYNC);   		// AR added - reset prescaler (NB: shared with all 16 bit timers);
 
       oldSREG = SREG;				// AR - save status register
       cli();						// AR - Disable interrupts
-      TCNT1 = 0;                	
+      TCNT1 = 0;
       SREG = oldSREG;          		// AR - Restore status register
       resume();
       do {	// Nothing -- wait until timer moved on from zero - otherwise get a phantom interrupt
@@ -113,35 +113,35 @@ class TimerOne
       cli();
       tcnt1 = TCNT1;
       SREG = oldSREG;
-      } while (tcnt1==0); 
-     
+      } while (tcnt1==0);
+
     //  TIFR1 = 0xff;              		// AR - Clear interrupt flags
     //  TIMSK1 = _BV(TOIE1);              // sets the timer overflow interrupt enable bit
     }
-    
+
     void stop()
     {
       TCCR1B &= ~(_BV(CS10) | _BV(CS11) | _BV(CS12));          // clears all clock selects bits
     }
-    
+
     void restart()
     {
       start();
     }
-    
+
 	  void resume()
     {
       TCCR1B |= clockSelectBits;
     }
-    
+
 	  unsigned long read()        //returns the value of the timer in microseconds
     {                           //rember! phase and freq correct mode counts up to then down again
       unsigned long tmp;				// AR amended to hold more than 65536 (could be nearly double this)
       unsigned int tcnt1;				// AR added
 
       oldSREG= SREG;
-        cli();							
-        tmp=TCNT1;    					
+        cli();
+        tmp=TCNT1;
       SREG = oldSREG;
 
       char scale=0;
@@ -163,7 +163,7 @@ class TimerOne
         scale=10;
         break;
       }
-      
+
       do {	// Nothing -- max delay here is ~1023 cycles.  AR modified
         oldSREG = SREG;
         cli();
@@ -175,7 +175,7 @@ class TimerOne
       tmp = (  (tcnt1>tmp) ? (tmp) : (long)(ICR1-tcnt1)+(long)ICR1  );		// AR amended to add casts and reuse previous TCNT1
       return ((tmp*1000L)/(F_CPU /1000L))<<scale;
     }
-    
+
     void pwm(char pin, int duty, long microseconds=-1)
     {
       if(microseconds > 0) setPeriod(microseconds);
@@ -191,13 +191,13 @@ class TimerOne
       resume();			// Lex - make sure the clock is running.  We don't want to restart the count, in case we are starting the second WGM
                     // and the first one is in the middle of a cycle
     }
-    
+
     void disablePwm(char pin)
     {
       if(pin == 1 || pin == 9)       TCCR1A &= ~_BV(COM1A1);   // clear the bit that enables pwm on PB1
       else if(pin == 2 || pin == 10) TCCR1A &= ~_BV(COM1B1);   // clear the bit that enables pwm on PB2
     }
-    
+
     void attachInterrupt(void (*isr)(), long microseconds=-1)
     {
       if(microseconds > 0) setPeriod(microseconds);
@@ -205,15 +205,15 @@ class TimerOne
       TIMSK1 = _BV(TOIE1);                                     // sets the timer overflow interrupt enable bit
       // might be running with interrupts disabled (eg inside an ISR), so don't touch the global state
       //  sei();
-      resume();	
+      resume();
     }
-    
+
     void detachInterrupt()
     {
-      TIMSK1 &= ~_BV(TOIE1);  // clears the timer overflow interrupt enable bit 
+      TIMSK1 &= ~_BV(TOIE1);  // clears the timer overflow interrupt enable bit
 															// timer continues to count without calling the isr
     }
-    
+
     void setPeriod(long microseconds)
     {
       long cycles = (F_CPU / 2000000) * microseconds;                                // the counter runs backwards after TOP, interrupt is at BOTTOM so divide microseconds by 2
@@ -223,30 +223,30 @@ class TimerOne
       else if((cycles >>= 2) < RESOLUTION) clockSelectBits = _BV(CS12);              // prescale by /256
       else if((cycles >>= 2) < RESOLUTION) clockSelectBits = _BV(CS12) | _BV(CS10);  // prescale by /1024
       else        cycles = RESOLUTION - 1, clockSelectBits = _BV(CS12) | _BV(CS10);  // request was out of bounds, set as maximum
-      
-      oldSREG = SREG;				
+
+      oldSREG = SREG;
       cli();							// Disable interrupts for 16 bit register access
       ICR1 = pwmPeriod = cycles;                                          // ICR1 is TOP in p & f correct pwm mode
       SREG = oldSREG;
-      
+
       TCCR1B &= ~(_BV(CS10) | _BV(CS11) | _BV(CS12));
       TCCR1B |= clockSelectBits;
     }
-    
+
     void setPwmDuty(char pin, int duty)
     {
       unsigned long dutyCycle = pwmPeriod;
-  
+
       dutyCycle *= duty;
       dutyCycle >>= 10;
-      
+
       oldSREG = SREG;
       cli();
       if(pin == 1 || pin == 9)       OCR1A = dutyCycle;
       else if(pin == 2 || pin == 10) OCR1B = dutyCycle;
       SREG = oldSREG;
     }
-    
+
     void (*isrCallback)();
 };
 
@@ -266,10 +266,10 @@ ISR(TIMER1_OVF_vect)          // interrupt service routine that wraps a user def
 //hardware IO definition
 #define BUTTON         2
 #define LIGHT_SENSOR   A0
-#define PWR_HOLD       A1  
+#define PWR_HOLD       A1
 #define KEY            2
 #define LED1           9
-#define LED2           13  
+#define LED2           13
 #define OUT_PIN1       5   //normal output pin
 #define OUT_PIN2       6
 #define IN_PIN1        A5  //normal input pin
@@ -277,7 +277,7 @@ ISR(TIMER1_OVF_vect)          // interrupt service routine that wraps a user def
 
 #define LINE_FINDER_FIND       (LOW == digitalRead(IN_PIN1))   //something cover the sensor
 #define LINE_FINDER_NOTFIND    (HIGH == digitalRead(IN_PIN1)) //nothing cover the sensor
-#define TIME_TO_DRINK          2700000   //unit: Ms. 2700000 Ms = 45 Min, time for not drinking water 
+#define TIME_TO_DRINK          2700000   //unit: Ms. 2700000 Ms = 45 Min, time for not drinking water
 #define SPEAK_DURATION         4         //4 s
 
 const int linefinder               = IN_PIN1;
@@ -294,10 +294,10 @@ void LEDShine(int times, int freqMs)
   pinMode (LED1,OUTPUT);
   for(int i=0;i<times;i++)
   {
-        analogWrite(LED1,5);
+        digitalWrite(LED1,HIGH);
         delay(freqMs/2);
-        analogWrite(LED1,0);     
-        delay(freqMs/2);  
+        digitalWrite(LED1,LOW);
+        delay(freqMs/2);
         WTD.doggieTickle();
   }
 }
@@ -307,12 +307,12 @@ void speak(int times, int seconds)
   for(int i=0; i<times; i++)
   {
     digitalWrite(recorder, HIGH);
-    delaySeconds(seconds);    
+    delaySeconds(seconds);
     digitalWrite(recorder, LOW);
     delaySeconds(1);
     if(LINE_FINDER_NOTFIND)
     {
-      i = times;      
+      i = times;
     }
 
   }
@@ -322,38 +322,38 @@ void delaySeconds(int seconds)
 {
   for(int j=0; j<seconds; j++)  //delay seconds
   {
-    WTD.doggieTickle(); 
+    WTD.doggieTickle();
     delay(1000);
   }
 }
 
 void TimingISR(void)
-{   
+{
   timeCounter++;
 }
 
 void setup()
-{    
-  //initial watchdog   
+{
+  //initial watchdog
   WTD.watchdogSetup();
   WTD.doggieTickle();
-  
+
   //initial devices
-  pinMode(linefinder,INPUT);    
+  pinMode(linefinder,INPUT);
   pinMode(recorder, OUTPUT);
   digitalWrite(recorder, LOW);
-  
+
   LEDShine(2, 1000);
-  
-#if DeBug  
+
+#if DeBug
   Serial.begin(9600);
   Serial.println("start");
-#endif    
+#endif
   Timer1.initialize(50000);//timing for 50ms
 }
 
 void loop()
-{      
+{
   if (LINE_FINDER_NOTFIND)
   {
     speak(1, SPEAK_DURATION);
@@ -377,11 +377,10 @@ void loop()
         #endif
         speak(3, SPEAK_DURATION);
         timeCounter = 0;
-      } 
+      }
       WTD.doggieTickle();
     }
     Timer1.detachInterrupt();
     timeCounter = 0;
-  }            
+  }
 }
-
