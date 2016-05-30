@@ -278,7 +278,7 @@ ISR(TIMER1_OVF_vect)          // interrupt service routine that wraps a user def
 #define LINE_FINDER_FIND       (LOW == digitalRead(IN_PIN1))   //something cover the sensor
 #define LINE_FINDER_NOTFIND    (HIGH == digitalRead(IN_PIN1)) //nothing cover the sensor
 #define TIME_TO_DRINK          2700000   //unit: Ms. 2700000 Ms = 45 Min, time for not drinking water
-#define SPEAK_DURATION         4         //4 s
+#define SPEAK_DURATION         5         //4 s
 
 const int linefinder               = IN_PIN1;
 const int recorder                 = OUT_PIN1;
