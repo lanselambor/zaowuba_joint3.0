@@ -27,6 +27,10 @@
  */
 #include <avr/wdt.h>
 
+#define VERSION "joint v3.0"
+#define NAME    "loudness motor"
+#define SKU     "110060095"
+
 class WatchDog
 {
   public:
@@ -287,11 +291,19 @@ volatile bool motor_run_flag = false;
 
 void setup()
 {
+  Serial.begin(9600);
+  Serial.print("Name: ");
+  Serial.println(NAME);
+  Serial.print("SKU: ");
+  Serial.println(SKU);
+  Serial.print("Version: ");
+  Serial.println(VERSION);
+  delay(100);
+
   //initial WatchDog
   WTD.watchdogSetup();
   WTD.doggieTickle();
 
-  Serial.begin(9600);
   pinMode(sound_pin, INPUT);
   pinMode(motor,OUTPUT);
 

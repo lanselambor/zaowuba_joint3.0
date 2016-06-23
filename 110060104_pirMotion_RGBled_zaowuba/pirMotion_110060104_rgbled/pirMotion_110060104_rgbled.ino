@@ -27,6 +27,10 @@
  */
 #include <avr/wdt.h>
 
+#define VERSION "joint v3.0"
+#define NAME    "pirMotion rgbled"
+#define SKU     "110060104"
+
 class WatchDog
 {
   public:
@@ -91,6 +95,15 @@ int led = OUT_PIN1;  //led control output pin
 int pir = IN_PIN1;   //PIR_Sensor input pin
 
 void setup() {
+  Serial.begin(9600);
+  Serial.print("Name: ");
+  Serial.println(NAME);
+  Serial.print("SKU: ");
+  Serial.println(SKU);
+  Serial.print("Version: ");
+  Serial.println(VERSION);
+  delay(100);
+
   WTD.watchdogSetup();
   WTD.doggieTickle();
 

@@ -27,6 +27,10 @@
  */
 #include <avr/wdt.h>
 
+#define VERSION "joint v3.0"
+#define NAME    "ultrasonic speaker"
+#define SKU     "110060099"
+
 class WatchDog
 {
   public:
@@ -187,7 +191,15 @@ void Gamut_Play(unsigned char data)
 
 void setup()
 {
-
+  Serial.begin(9600);
+  Serial.print("Name: ");
+  Serial.println(NAME);
+  Serial.print("SKU: ");
+  Serial.println(SKU);
+  Serial.print("Version: ");
+  Serial.println(VERSION);
+  delay(100);
+    
   WTD.watchdogSetup();
   WTD.doggieTickle();
 
@@ -198,7 +210,7 @@ void setup()
     digitalWrite(LED1,HIGH);
     delay(500);
     digitalWrite(LED1,LOW);
-    delay(500);  
+    delay(500);
     WTD.doggieTickle();
   }
 #if DeBug

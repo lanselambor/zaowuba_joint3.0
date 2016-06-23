@@ -27,6 +27,10 @@
  */
 #include <avr/wdt.h>
 
+#define VERSION "joint v3.0"
+#define NAME    "linefinder recorder"
+#define SKU     "110060098"
+
 class WatchDog
 {
   public:
@@ -334,6 +338,15 @@ void TimingISR(void)
 
 void setup()
 {
+  Serial.begin(9600);
+  Serial.print("Name: ");
+  Serial.println(NAME);
+  Serial.print("SKU: ");
+  Serial.println(SKU);
+  Serial.print("Version: ");
+  Serial.println(VERSION);
+  delay(100);
+
   //initial watchdog
   WTD.watchdogSetup();
   WTD.doggieTickle();

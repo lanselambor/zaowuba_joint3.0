@@ -30,6 +30,10 @@
 
 #define RESOLUTION 65536    // Timer1 is 16 bit
 
+#define VERSION "joint v3.0"
+#define NAME    "loudness RGBledStrip"
+#define SKU     "110060108"
+
 class TimerOne
 {
   public:
@@ -353,6 +357,15 @@ void action_rgbled_off ()
 
 void setup()
 {
+  Serial.begin(9600);
+  Serial.print("Name: ");
+  Serial.println(NAME);
+  Serial.print("SKU: ");
+  Serial.println(SKU);
+  Serial.print("Version: ");
+  Serial.println(VERSION);
+  delay(100);
+
   //initial WatchDog
   WTD.watchdogSetup();
   WTD.doggieTickle();

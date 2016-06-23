@@ -27,6 +27,10 @@
  */
 #include <avr/wdt.h>
 
+#define VERSION "joint v3.0"
+#define NAME    "switch vibration"
+#define SKU     "110060103"
+
 class WatchDog
 {
   public:
@@ -281,7 +285,15 @@ unsigned long timeCounter = 0;
 
 void setup()
 {
-
+  Serial.begin(9600);
+  Serial.print("Name: ");
+  Serial.println(NAME);
+  Serial.print("SKU: ");
+  Serial.println(SKU);
+  Serial.print("Version: ");
+  Serial.println(VERSION);
+  delay(100);
+  
   WTD.watchdogSetup();
   WTD.doggieTickle();
 
@@ -315,7 +327,7 @@ void TimingISR()
 void loop()
 {
   if(HIGH == digitalRead(SWITCH))
-  {    
+  {
     while(HIGH == digitalRead(SWITCH))
     {
       WTD.doggieTickle();

@@ -30,6 +30,10 @@
 
 #define RESOLUTION 65536    // Timer1 is 16 bit
 
+#define VERSION "joint v3.0"
+#define NAME    "tilt 4display"
+#define SKU     "110060115"
+
 class TimerOne
 {
   public:
@@ -561,6 +565,15 @@ void TimeUpdate(void)
 
 void setup()
 {
+  Serial.begin(9600);
+  Serial.print("Name: ");
+  Serial.println(NAME);
+  Serial.print("SKU: ");
+  Serial.println(SKU);
+  Serial.print("Version: ");
+  Serial.println(VERSION);
+  delay(100);
+
   WTD.watchdogSetup();
   WTD.doggieTickle();
 
@@ -569,7 +582,7 @@ void setup()
   {
     digitalWrite(LED1, HIGH);
     delay(500);
-    digitalWrite(LED1, LOW); 
+    digitalWrite(LED1, LOW);
     delay(500);
     WTD.doggieTickle();
   }

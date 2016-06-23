@@ -27,6 +27,10 @@
  */
 #include <avr/wdt.h>
 
+#define VERSION "joint v3.0"
+#define NAME    "LineFinder 4Display"
+#define SKU     "110060096"
+
 class WatchDog
 {
   public:
@@ -335,6 +339,15 @@ void display_seg(uint16_t num_money)
 
 void setup()
 {
+  Serial.begin(9600);
+  Serial.print("Name: ");
+  Serial.println(NAME);
+  Serial.print("SKU: ");
+  Serial.println(SKU);
+  Serial.print("Version: ");
+  Serial.println(VERSION);
+  delay(100);
+
   WTD.watchdogSetup();
   WTD.doggieTickle();
 

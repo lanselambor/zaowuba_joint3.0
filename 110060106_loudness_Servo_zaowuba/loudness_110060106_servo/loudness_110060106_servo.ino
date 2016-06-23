@@ -27,6 +27,10 @@
  */
 #include <avr/wdt.h>
 
+#define VERSION "joint v3.0"
+#define NAME    "loudness servo"
+#define SKU     "110060106"
+
 class WatchDog
 {
   public:
@@ -192,6 +196,15 @@ int midNum(int *a, int *b, int *c)
 
 void setup()
 {
+  Serial.begin(9600);
+  Serial.print("Name: ");
+  Serial.println(NAME);
+  Serial.print("SKU: ");
+  Serial.println(SKU);
+  Serial.print("Version: ");
+  Serial.println(VERSION);
+  delay(100);
+
   //initial watchdog
   WTD.watchdogSetup();
   WTD.doggieTickle();
