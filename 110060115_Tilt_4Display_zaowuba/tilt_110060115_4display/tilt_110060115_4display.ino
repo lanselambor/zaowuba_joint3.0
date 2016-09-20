@@ -622,8 +622,8 @@ void loop()
   if(Update == ON)
   {
     TimeUpdate();
-    if(tilt_value == 1) tm1637.display(TimeDisp,DISPLAY_FLAG_F);
-    if(tilt_value == 0) tm1637.display(TimeDisp,DISPLAY_FLAG_B);
+    if(tilt_value == 0) tm1637.display(TimeDisp,DISPLAY_FLAG_F);
+    if(tilt_value == 1) tm1637.display(TimeDisp,DISPLAY_FLAG_B);
   }
 
   if((minute == 0) && (second == 0))
